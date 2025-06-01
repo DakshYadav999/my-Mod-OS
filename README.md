@@ -51,10 +51,6 @@ This ensures the kernel name becomes 6.12.13-custom.
 5. Optional: Customize Kernel Config
 
 sudo make menuconfig      # Terminal UI
-# or
-# sudo make nconfig       # ncurses UI
-# sudo make xconfig       # Qt GUI
-
 
 
 6. Build Kernel and Modules
