@@ -1,0 +1,105 @@
+OS Project: Custom Kali-Based Linux OS (Kernel 6.12.13-Custom)
+
+
+
+PHASE 1: SETUP & PREPARATION
+
+1. System Overview
+
+Base OS: Kali Linux (Graphical Install)
+
+Initial Kernel Booted: 6.12.25-kali-amd64
+
+Custom Kernel Built: 6.12.13-custom
+
+Environment: Dual boot or VirtualBox on Windows 10/11
+
+Recommended Specs: 40GB+ disk, 4GB+ RAM
+
+
+2. Install Required Packages
+
+sudo apt update
+sudo apt install build-essential libncurses-dev bison flex libssl-dev libelf-dev bc
+
+
+
+PHASE 2: CUSTOM KERNEL COMPILATION
+
+3. Download Linux Kernel 6.12.13
+
+cd /usr/src/
+sudo wget https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.13.tar.xz
+sudo tar -xf linux-6.12.13.tar.xz
+cd linux-6.12.13
+
+4. Customize Kernel Using make menuconfig
+
+sudo make menuconfig
+
+The following features were manually disabled:
+
+Sound Card Support
+Path: Device Drivers -> Sound card support → Disabled
+
+IPv6 Support
+Path: Networking support -> Networking options -> The IPv6 protocol → Disabled
+
+Bluetooth
+Path: Networking support -> Bluetooth subsystem support → Disabled
+
+USB Support
+Path: Device Drivers -> USB support → Disabled
+
+
+> These changes reduce kernel size and remove unnecessary features for a custom lightweight system.
+
+
+
+5. Compile and Install the Kernel
+
+sudo make -j$(nproc)
+sudo make modules_install
+sudo make install
+
+> After this, vmlinuz-6.12.13-custom and its initrd image are placed in /boot.
+
+
+
+
+
+PHASE 3: INITRAMFS & GRUB
+
+6. Generate initramfs for 6.12.13-custom
+
+sudo update-initramfs -c -k 6.12.13-custom
+
+7. Update GRUB to Add the Custom Kernel
+
+sudo update-grub
+
+> GRUB will now list 6.12.13-custom during boot. Confirm on reboot.
+
+
+
+
+
+GRUB Configuration Without OS-Prober
+
+To avoid cluttering the GRUB menu with other OS entries and ensure a clean boot experience:
+
+8. Disable OS-Prober
+
+Edit GRUB settings:
+
+sudo nano /etc/default/grub
+
+Add this line:
+
+GRUB_DISABLE_OS_PROBER=true
+
+Then update GRUB:
+
+sudo update-grub
+
+> This ensures GRUB doesn’t auto-detect Windows or other Linux installations, focusing only on your custom kernel entries.
